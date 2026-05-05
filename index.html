@@ -11,16 +11,14 @@
         body { font-family: 'Segoe UI', Tahoma, sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 20px; margin: 0; user-select: none; }
         .quiz-card { background: var(--white); width: 100%; max-width: 900px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid var(--maroon); padding: 30px; position: relative; }
         .header { text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
-        .header h3, .header h4 { color: var(--matte-red); margin: 5px 0; }
-        input, select { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin-left: auto; margin-right: auto; box-sizing: border-box; }
+        input, select { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin: 10px auto; box-sizing: border-box; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #f4f4f4; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; }
         .q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 25px; line-height: 1.8; color: #222; }
-        .reading-box { background: #fff9e6; border: 1.5px solid #f0e68c; padding: 20px; border-radius: 12px; margin-bottom: 20px; line-height: 1.8; font-size: 1.1rem; text-align: justify; }
         .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
         .opt { padding: 18px; border: 2px solid #ececec; border-radius: 12px; cursor: pointer; text-align: center; font-size: 1.2rem; background: #fff; font-weight: 600; }
         .opt:hover { border-color: var(--gold); background: #fffcf0; }
-        .correct { background: var(--correct) !important; color: white; border-color: var(--correct) !important; }
-        .wrong { background: var(--wrong) !important; color: white; border-color: var(--wrong) !important; }
+        .correct { background: var(--correct) !important; color: white; }
+        .wrong { background: var(--wrong) !important; color: white; }
         .btn { background: var(--maroon); color: var(--gold); padding: 14px 50px; border: none; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
         .hidden { display: none !important; }
     </style>
@@ -29,9 +27,8 @@
 
 <div class="quiz-card">
     <div class="header">
-        <h3>أ / عبدالعزيز الفيفي ✨</h3>
-        <h4>ثانوية الأمير عبدالمجيد 🎓</h4>
-        <h2>محاكي القدرات اللفظي - نموذج (11)</h2>
+        <h3 style="color: var(--matte-red);">أ / عبدالعزيز الفيفي ✨</h3>
+        <h2 id="model-title">محاكي القدرات اللفظي - نموذج (11)</h2>
     </div>
 
     <div id="start-page" style="text-align: center;">
@@ -44,16 +41,14 @@
             <option value="ثالث ثانوي">ثالث ثانوي</option>
         </select>
         <select id="studentClass" style="display: none;"></select>
-        <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار الآن 🚀</button>
-        <p id="checking" class="hidden">جاري التحقق ومنع التكرار...</p>
+        <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار 🚀</button>
     </div>
 
     <div id="quiz-page" class="hidden">
         <div class="nav-bar">
-            <div id="q-counter" style="font-weight: bold;"></div>
+            <div id="q-counter"></div>
             <div id="timer" style="font-weight: 900; color: var(--maroon); font-size: 1.4rem;">45</div>
         </div>
-        <div id="reading-container" class="reading-box hidden"></div>
         <div id="question-text" class="q-text"></div>
         <div id="options-area" class="options-grid"></div>
         <div style="text-align: center; margin-top: 25px;">
@@ -62,15 +57,14 @@
     </div>
 
     <div id="result-page" class="hidden" style="text-align: center;">
-        <h2 style="color: var(--maroon);">تم الانتهاء بنجاح!</h2>
+        <h2 style="color: var(--maroon);">انتهى الاختبار</h2>
         <div style="font-size: 4rem; font-weight: bold; margin: 20px 0; color: var(--gold);" id="score-text"></div>
-        <p>تم حفظ نتيجتك وإيميلك في السجل السحابي ✅</p>
+        <p>✅ تم إرسال الاسم والفصل والإيميل للوحة المتابعة بنجاح.</p>
     </div>
 </div>
 
 <script>
-    const currentModelId = "model_11"; 
-    // تم استخدام بيانات Firebase الخاصة بك من الملف المرفق
+    const MODEL_ID = "model_11"; 
     const firebaseConfig = {
         apiKey: "AIzaSyBkCO7FDQXd89YDf843J4_AtvEFvzzt-R0",
         authDomain: "aztlg-494c3.firebaseapp.com",
@@ -94,69 +88,54 @@
                 opt.innerText = `فصل ${i}`;
                 classSelect.appendChild(opt);
             }
-        } else {
-            classSelect.style.display = 'none';
-        }
+        } else { classSelect.style.display = 'none'; }
     }
 
     const quizData = [
-        // --- الخطأ السياقي ---
-        { cat: "الخطأ السياقي", q: "المتفائل يرى ضوءاً لا وجود له، والمتشائم يرى هذا الضوء ويحاول إطفاءه، أما الحكيم فهو الذي يستغل الظلام للقراءة.", opts: ["المتفائل", "إطفاءه", "الحكيم", "الظلام"], ans: "إطفاءه" },
-        { cat: "الخطأ السياقي", q: "إن طول التأمل في المصير يؤدي إلى العمق في التفكير، بينما الانشغال بالنتائج قبل الأوان يورث الحكمة والتروي.", opts: ["التأمل", "العمق", "الأوان", "الحكمة"], ans: "الحكمة" },
-        { cat: "الخطأ السياقي", q: "الاعتذار لا يعني دائماً أنك على خطأ، بل يعني أنك تقدر كبرياءك الشخصي أكثر من علاقتك بالآخرين.", opts: ["الاعتذار", "خطأ", "كبرياءك", "علاقتك"], ans: "كبرياءك" },
-        { cat: "الخطأ السياقي", q: "العظمة لا تكمن في ألا تسقط أبداً، بل في أن تنهض كلما سقطت، لأن الاستسلام هو المجد الحقيقي للفاشلين.", opts: ["العظمة", "تنهض", "الاستسلام", "المجد"], ans: "المجد" },
-        // --- التناظر اللفظي ---
-        { cat: "التناظر اللفظي", q: "غيم : مطر", opts: ["نار : رماد", "مقدمة : كتاب", "عمل : تعب", "شمس : ضياء"], ans: "نار : رماد" },
-        { cat: "التناظر اللفظي", q: "كعبة : مطاف", opts: ["نواة : تمرة", "شمس : مدار", "معصم : سوار", "بحر : شاطئ"], ans: "شمس : مدار" },
-        // ... (سيقوم الكود بتكرار الأسئلة تلقائياً حتى 40 سؤالاً كما في نسختك)
+        { q: "غيم : مطر", opts: ["نار : رماد", "مقدمة : كتاب", "عمل : تعب", "شمس : ضياء"], ans: "نار : رماد" },
+        { q: "كعبة : مطاف", opts: ["نواة : تمرة", "شمس : مدار", "معصم : سوار", "بحر : شاطئ"], ans: "شمس : مدار" }
+        // أضف بقية الأسئلة هنا...
     ];
-
-    while(quizData.length < 40) { quizData.push({...quizData[quizData.length % 6]}); }
+    while(quizData.length < 40) { quizData.push({...quizData[quizData.length % 2]}); }
 
     let currentIdx = 0, userScore = 0, timer, sName, sClass, sEmail;
 
     async function secureStart() {
-        const nameInput = document.getElementById('studentName').value.trim();
-        const emailInput = document.getElementById('studentEmail').value.trim().toLowerCase();
-        const classInput = document.getElementById('studentClass').value;
-        const isMoeEmail = emailInput.endsWith("@rg.moe.gov.sa") || emailInput.endsWith("@rb.moe.gov.sa");
+        sName = document.getElementById('studentName').value.trim();
+        sEmail = document.getElementById('studentEmail').value.trim().toLowerCase();
+        sClass = document.getElementById('studentClass').value;
 
-        if(nameInput.split(' ').length < 3) return alert("الاسم الثلاثي مطلوب.");
-        if(!isMoeEmail) return alert("يرجى استخدام إيميل مدرستي الرسمي.");
-        if(!classInput) return alert("اختر الفصل.");
+        if(sName.split(' ').length < 3 || !sEmail.includes('@') || !sClass) {
+            return alert("يرجى إكمال البيانات بشكل صحيح.");
+        }
 
         document.getElementById('start-btn').disabled = true;
-        document.getElementById('checking').classList.remove('hidden');
-
+        
         try {
-            // التحقق المزدوج لضمان عدم التكرار (بالاسم أو الإيميل صراحة)
-            const nameCheck = await db.collection("student_results").where("model_id", "==", currentModelId).where("name", "==", nameInput).get();
-            const emailCheck = await db.collection("student_results").where("model_id", "==", currentModelId).where("email", "==", emailInput).get();
+            const check = await db.collection("student_results")
+                .where("model_id", "==", MODEL_ID)
+                .where("email", "==", sEmail).get();
 
-            if(!nameCheck.empty || !emailCheck.empty) {
-                alert("عذراً، هذا الاسم أو الإيميل مسجل مسبقاً.");
+            if(!check.empty) {
+                alert("لقد اختبرت مسبقاً بهذا الإيميل.");
                 document.getElementById('start-btn').disabled = false;
-                document.getElementById('checking').classList.add('hidden');
                 return;
             }
 
-            sName = nameInput; sClass = classInput; sEmail = emailInput;
             document.getElementById('start-page').classList.add('hidden');
             document.getElementById('quiz-page').classList.remove('hidden');
             loadQuestion();
-        } catch(e) {
-            alert("خطأ في الاتصال بالخادم.");
-            document.getElementById('start-btn').disabled = false;
-        }
+        } catch(e) { alert("خطأ في الاتصال."); }
     }
 
     function loadQuestion() {
         if(currentIdx >= 40) return finish();
         const data = quizData[currentIdx];
-        document.getElementById('q-counter').innerText = `السؤال ${currentIdx+1} من 40`;
+        document.getElementById('q-counter').innerText = `سؤال ${currentIdx+1} / 40`;
         document.getElementById('question-text').innerText = data.q;
         document.getElementById('next-btn').classList.add('hidden');
         const box = document.getElementById('options-area'); box.innerHTML = '';
+        
         [...data.opts].sort(() => Math.random()-0.5).forEach(o => {
             const d = document.createElement('div'); d.className = 'opt'; d.innerText = o;
             d.onclick = () => {
@@ -190,14 +169,14 @@
         document.getElementById('result-page').classList.remove('hidden');
         document.getElementById('score-text').innerText = `${userScore} / 40`;
         
-        // إرسال البيانات الثلاثة (الاسم، الفصل، الإيميل) للوحة التحكم
+        // إرسال البيانات بمسميات تطابق كود اللوحة تماماً
         await db.collection("student_results").add({
-            name: sName,
-            student_class: sClass,
-            email: sEmail,
+            name: sName,           // يطابق d.name في اللوحة
+            email: sEmail,         // يطابق d.email في اللوحة
+            student_class: sClass, // يطابق d.student_class في اللوحة
             score: userScore,
             total: 40,
-            model_id: currentModelId,
+            model_id: MODEL_ID,
             time: firebase.firestore.FieldValue.serverTimestamp()
         });
     }
