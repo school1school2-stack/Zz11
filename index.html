@@ -12,7 +12,7 @@
         .quiz-card { background: var(--white); width: 100%; max-width: 900px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); border-top: 10px solid var(--maroon); padding: 30px; position: relative; }
         .header { text-align: center; border-bottom: 2px solid var(--gold); margin-bottom: 20px; padding-bottom: 10px; }
         .header h3 { color: var(--matte-red); margin: 5px 0; }
-        input, select { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin: 10px auto; box-sizing: border-box; }
+        input { width: 85%; padding: 14px; border-radius: 8px; border: 1.5px solid #ccc; font-size: 1.1rem; outline: none; margin-bottom: 10px; display: block; margin: 10px auto; box-sizing: border-box; text-align: center; }
         .nav-bar { display: flex; justify-content: space-between; align-items: center; background: #f4f4f4; padding: 12px 20px; border-radius: 10px; margin-bottom: 20px; }
         .q-text { font-size: 1.4rem; font-weight: bold; text-align: center; margin-bottom: 25px; line-height: 1.8; color: #222; }
         .reading-box { background: #fff9e6; border: 1.5px solid #f0e68c; padding: 20px; border-radius: 12px; margin-bottom: 20px; line-height: 1.8; font-size: 1.1rem; text-align: justify; }
@@ -34,15 +34,8 @@
     </div>
 
     <div id="start-page" style="text-align: center;">
+        <p style="font-weight: bold; color: var(--maroon);">يرجى إدخال الاسم الثلاثي لبدء الاختبار</p>
         <input type="text" id="studentName" placeholder="الاسم الثلاثي">
-        <input type="email" id="studentEmail" placeholder="إيميل مدرستي (للتحقق فقط)">
-        <select id="stageSelect" onchange="updateClasses()">
-            <option value="">-- المرحلة الدراسية --</option>
-            <option value="أول ثانوي">أول ثانوي</option>
-            <option value="ثاني ثانوي">ثاني ثانوي</option>
-            <option value="ثالث ثانوي">ثالث ثانوي</option>
-        </select>
-        <select id="studentClass" style="display: none;"></select>
         <button id="start-btn" class="btn" onclick="secureStart()">بدء الاختبار 🚀</button>
     </div>
 
@@ -79,23 +72,7 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
-    function updateClasses() {
-        const stage = document.getElementById('stageSelect').value;
-        const classSelect = document.getElementById('studentClass');
-        classSelect.innerHTML = '<option value="">-- اختر الفصل --</option>';
-        if (stage) {
-            classSelect.style.display = 'block';
-            for (let i = 1; i <= 6; i++) {
-                const opt = document.createElement('option');
-                opt.value = `${stage} - ${i}`;
-                opt.innerText = `فصل ${i}`;
-                classSelect.appendChild(opt);
-            }
-        } else { classSelect.style.display = 'none'; }
-    }
-
     const quizData = [
-        // الخطأ السياقي (8)
         { q: "المتفائل يرى ضوءاً لا وجود له، والمتشائم يرى هذا الضوء ويحاول إطفاءه، أما الحكيم فهو الذي يستغل الظلام للقراءة.", opts: ["المتفائل", "إطفاءه", "الحكيم", "الظلام"], ans: "إطفاءه" },
         { q: "إن طول التأمل في المصير يؤدي إلى العمق في التفكير، بينما الانشغال بالنتائج قبل الأوان يورث الحكمة والتروي.", opts: ["التأمل", "العمق", "الأوان", "الحكمة"], ans: "الحكمة" },
         { q: "الاعتذار لا يعني دائماً أنك على خطأ، بل يعني أنك تقدر كبرياءك الشخصي أكثر من علاقتك بالآخرين.", opts: ["الاعتذار", "خطأ", "كبرياءك", "علاقتك"], ans: "كبرياءك" },
@@ -104,7 +81,6 @@
         { q: "الصمت هو العلم الوحيد الذي لا يحتاج إلى معلم، وهو أبلغ رد على السفهاء حين يمدحونك.", opts: ["العلم", "معلم", "أبلغ", "يمدحونك"], ans: "يمدحونك" },
         { q: "كن جواداً تحب الناس، ولا تكن كالبخيل الذي يجمع المال ليفتقر به في الدنيا ويحاسب عليه في الآخرة كالغني.", opts: ["جواداً", "البخيل", "ليفتقر", "كالغني"], ans: "كالغني" },
         { q: "الفشل هو الشيء الوحيد الذي تستطيع أن تحققه دون بذل أي تراجع.", opts: ["الفشل", "تحققه", "بذل", "تراجع"], ans: "تراجع" },
-        // المفردة الشاذة (7)
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["القاموس", "المعجم", "الموسوعة", "الرواية"], ans: "الرواية" },
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["الصهيل", "الشحيج", "الزئير", "الحفيف"], ans: "الحفيف" },
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["عمان", "المنامة", "دبي", "الدوحة"], ans: "دبي" },
@@ -112,7 +88,6 @@
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["السيف", "المهند", "الحسام", "الرمح"], ans: "الرمح" },
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["الهكتار", "الفدان", "الميل", "الدونم"], ans: "الميل" },
         { q: "حدد المفردة الشاذة فيما يلي:", opts: ["التين", "الزيتون", "النخيل", "العنب"], ans: "النخيل" },
-        // الارتباط والاختلاف (7)
         { q: "ما الكلمة التي ترتبط بكلمة (شتاء) ارتباطاً وثيقاً؟", opts: ["المطر", "البرد", "المربعانية", "المدفأة"], ans: "المربعانية" },
         { q: "الكلمة الأكثر ارتباطاً بكلمة (محراب) هي:", opts: ["المنبر", "الإمام", "المسجد", "الصلاة"], ans: "الإمام" },
         { q: "أي من الكلمات التالية تختلف في نوع الارتباط عن البقية؟", opts: ["البصيرة", "الرؤية", "المشاهدة", "النظر"], ans: "البصيرة" },
@@ -120,65 +95,46 @@
         { q: "ما الكلمة التي تخرج عن سياق الارتباط بكلمة (نحلة)؟", opts: ["خلية", "رحيق", "دبور", "عسل"], ans: "دبور" },
         { q: "الارتباط بين (الريشة والرسام) يشبه الارتباط بين:", opts: ["المشرط والجراح", "القلم والورقة", "الكتاب والمكتبة", "المنجل والفلاح"], ans: "المشرط والجراح" },
         { q: "أي الكلمات التالية ترتبط بـ (الذهب) من حيث كونه معدناً ونقداً في آن واحد؟", opts: ["الفضة", "النحاس", "الماس", "البترول"], ans: "الفضة" },
-        // التناظر اللفظي (6)
         { q: "يقين : شك", opts: ["إيمان : كفر", "صدق : كذب", "ظن : وهم", "علم : جهل"], ans: "إيمان : كفر" },
         { q: "غمد : سيف", opts: ["خاتم : فص", "جراب : جوال", "قدم : حذاء", "أذن : قرط"], ans: "جراب : جوال" },
         { q: "بحر : ميناء", opts: ["طريق : رصيف", "جو : مطار", "غابة : شجر", "مدرسة : فصل"], ans: "جو : مطار" },
         { q: "دقيقة : ثانية", opts: ["ساعة : يوم", "قرن : عام", "ريال : هللة", "كيلومتر : متر"], ans: "ريال : هللة" },
         { q: "ورقة : غصن", opts: ["خيط : ثوب", "كلمة : جملة", "لاعب : فريق", "لبنة : جدار"], ans: "كلمة : جملة" },
         { q: "فولاذ : صلابة", opts: ["حرير : نعومة", "ماء : سيولة", "غزال : سرعة", "ثعلب : مكر"], ans: "حرير : نعومة" },
-        // إكمال الجمل (6)
         { q: "يُعد ...... من أرقى الفنون، فهو لغة لا تحتاج إلى ...... ليفهمها العالم.", opts: ["الرسم - ترجمة", "الشعر - شرح", "النحت - أدوات", "التصوير - ضوء"], ans: "الرسم - ترجمة" },
         { q: "النجاح لا يحتاج إلى ...... ، بل يحتاج إلى ...... مستمر.", opts: ["حظ - عمل", "مال - صبر", "سرعة - هدوء", "ذكاء - جهد"], ans: "حظ - عمل" },
         { q: "من أراد أن يحيا ...... فعليه أن يترك ...... .", opts: ["عزيزاً - الطمع", "سعيداً - الحزن", "هادئاً - القلق", "ناجحاً - الكسل"], ans: "عزيزاً - الطمع" },
         { q: "الإنسان الناجح هو الذي يغلق ...... قبل أن يغلق الناس ...... .", opts: ["فمه - آذانهم", "بابه - قلوبهم", "عينه - طرقهم", "كتابه - أذهانهم"], ans: "فمه - آذانهم" },
         { q: "الكتاب هو ...... الذي لا يخون، و ...... الذي لا يمل.", opts: ["الصديق - الجليس", "المعلم - المرجع", "الكنز - الرفيق", "النور - الصاحب"], ans: "الصديق - الجليس" },
         { q: "إذا كنت تريد ...... السحاب، فعليك أن تترك ...... التراب.", opts: ["لمس - وطء", "رؤية - غبار", "صعود - عيش", "بلوغ - زحف"], ans: "لمس - وطء" },
-        // استيعاب المقروء (6)
-        { passage: "تعتمد تقنية النانو على التلاعب بالمادة على مستوى الذرة والجزيء. هذه التقنية تفتح آفاقاً طبية مذهلة...", q: "الميزة النوعية لتقنية النانو في الطب كما وردت هي:", opts: ["رخص ثمن الدواء", "الاستهداف الدقيق للخلايا", "إلغاء العمليات الجراحية", "سرعة تصنيع الدواء"], ans: "الاستهداف الدقيق للخلايا" },
-        { passage: "تعد الهجرة الموسمية للطيور معجزة بيولوجية، حيث تقطع آلاف الكيلومترات بدقة مذهلة...", q: "الدافع الرئيسي لهجرة الطيور وفقاً للنص هو:", opts: ["استكشاف الأرض", "الهروب من الأعداء", "البحث عن مقومات الحياة", "تتبع النجوم"], ans: "البحث عن مقومات الحياة" },
-        { passage: "ظاهرة التلوث السمعي في المدن الكبرى تؤدي إلى اضطرابات في التركيز...", q: "يقترح النص حلاً هندسياً للتلوث السمعي يتمثل في:", opts: ["منع مكبرات الصوت", "توفير غطاء نباتي عازل", "بناء جدران أسمنتية", "تقليل عدد السكان"], ans: "توفير غطاء نباتي عازل" },
-        { passage: "الذكاء العاطفي هو القدرة على فرز العواطف الذاتية وفهم عواطف الآخرين...", q: "يستنتج من النص أن القائد الناجح هو من يمتلك قدرة أكبر على:", opts: ["تحليل الأرقام", "إدارة المشاعر", "حفظ القوانين", "العمل الفردي"], ans: "إدارة المشاعر" },
-        { passage: "تعتبر 'الألياف البصرية' ثورة في عالم الاتصالات، فهي تنقل البيانات بسرعة الضوء...", q: "تتفوق الألياف البصرية على النحاسية في كونها:", opts: ["أرخص ثمناً", "أقل وزناً", "محصنة ضد التداخلات", "قابلة للطي"], ans: "محصنة ضد التداخلات" },
-        { passage: "العمل التطوعي هو تقديم الوقت والجهد دون مقابل مادي لخدمة المجتمع...", q: "الفائدة العائدة على المتطوع نفسه هي:", opts: ["الحصول على أجر", "صقل الشخصية والمهارات", "إعفاء من الضرائب", "الاستغناء عن العمل"], ans: "صقل الشخصية والمهارات" }
+        { passage: "تعتمد تقنية النانو على التلاعب بالمادة...", q: "الميزة النوعية لتقنية النانو في الطب هي:", opts: ["رخص الثمن", "الاستهداف الدقيق", "إلغاء الجراحة", "سرعة التصنيع"], ans: "الاستهداف الدقيق" },
+        { passage: "تعد الهجرة الموسمية للطيور معجزة...", q: "الدافع الرئيسي لهجرة الطيور هو:", opts: ["الاستكشاف", "الهروب", "مقومات الحياة", "تتبع النجوم"], ans: "مقومات الحياة" },
+        { passage: "ظاهرة التلوث السمعي...", q: "يقترح النص حلاً هندسياً يتمثل في:", opts: ["منع المكبرات", "غطاء نباتي عازل", "جدران أسمنتية", "تقليل السكان"], ans: "توفير غطاء نباتي عازل" },
+        { passage: "الذكاء العاطفي...", q: "يستنتج من النص أن القائد الناجح هو من يمتلك:", opts: ["تحليل الأرقام", "إدارة المشاعر", "حفظ القوانين", "العمل الفردي"], ans: "إدارة المشاعر" },
+        { passage: "تعتبر الألياف البصرية ثورة...", q: "تتفوق الألياف البصرية على النحاسية في:", opts: ["أرخص ثمناً", "أقل وزناً", "محصنة ضد التداخلات", "قابلة للطي"], ans: "محصنة ضد التداخلات" },
+        { passage: "العمل التطوعي هو تقديم الوقت...", q: "الفائدة العائدة على المتطوع نفسه هي:", opts: ["الحصول على أجر", "صقل الشخصية والمهارات", "إعفاء ضريبي", "الاستغناء عن العمل"], ans: "صقل الشخصية والمهارات" }
     ];
 
     let currentIdx = 0, userScore = 0, timer, sName;
 
-    async function secureStart() {
+    function secureStart() {
         sName = document.getElementById('studentName').value.trim();
-        const email = document.getElementById('studentEmail').value.trim().toLowerCase();
-        if(sName.split(' ').length < 3) return alert("الاسم الثلاثي مطلوب.");
-        if(!email.includes('@')) return alert("يرجى إدخال إيميل صحيح للتحقق.");
-
-        document.getElementById('start-btn').disabled = true;
+        if(sName.split(' ').length < 3) return alert("يرجى إدخال الاسم الثلاثي.");
         
-        try {
-            // التحقق فقط من عدم تكرار الإيميل قبل البدء
-            const check = await db.collection("student_results").where("model_id", "==", MODEL_ID).where("email", "==", email).get();
-            if(!check.empty) {
-                alert("تم التسجيل بهذا الإيميل مسبقاً.");
-                document.getElementById('start-btn').disabled = false;
-                return;
-            }
-            document.getElementById('start-page').classList.add('hidden');
-            document.getElementById('quiz-page').classList.remove('hidden');
-            loadQuestion();
-        } catch(e) { alert("خطأ في الاتصال."); document.getElementById('start-btn').disabled = false; }
+        document.getElementById('start-page').classList.add('hidden');
+        document.getElementById('quiz-page').classList.remove('hidden');
+        loadQuestion();
     }
 
     function loadQuestion() {
         if(currentIdx >= quizData.length) return finish();
         const data = quizData[currentIdx];
         document.getElementById('q-counter').innerText = `سؤال ${currentIdx+1} من ${quizData.length}`;
-        
         const rc = document.getElementById('reading-container');
         if(data.passage) { rc.innerText = data.passage; rc.classList.remove('hidden'); }
         else { rc.classList.add('hidden'); }
-        
         document.getElementById('question-text').innerText = data.q;
         document.getElementById('next-btn').classList.add('hidden');
-        
         const box = document.getElementById('options-area'); box.innerHTML = '';
         [...data.opts].sort(() => Math.random()-0.5).forEach(o => {
             const d = document.createElement('div'); d.className = 'opt'; d.innerText = o;
@@ -213,7 +169,7 @@
         document.getElementById('result-page').classList.remove('hidden');
         document.getElementById('score-text').innerText = `${userScore} / ${quizData.length}`;
         
-        // إرسال الاسم والدرجة فقط إلى لوحة التحكم (حذف الفصل والإيميل)
+        // إرسال الاسم والدرجة فقط لضمان عدم ظهور أعمدة زائدة في اللوحة
         await db.collection("student_results").add({
             name: sName,
             score: userScore,
